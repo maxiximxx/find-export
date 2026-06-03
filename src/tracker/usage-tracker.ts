@@ -10,7 +10,7 @@ import {
 import { parseExports } from '../parser/export-parser';
 import { scanImports } from '../parser/import-scanner';
 import { scanDynamicImports } from '../parser/dynamic-import-scanner';
-import { readGitignorePatterns } from '../resolver/gitignore-reader';
+import { readGitignorePatterns, isIgnored } from '../resolver/gitignore-reader';
 import { buildAliasConfig } from '../resolver/alias-merger';
 import { traceReExports } from './reexport-tracer';
 
@@ -153,7 +153,6 @@ async function findProjectFiles(
   for (const uri of uris) {
     const filePath = uri.fsPath;
     // Additional gitignore filtering
-    const { isIgnored } = await import('../resolver/gitignore-reader');
     if (!isIgnored(filePath, gitignorePatterns, projectRoot)) {
       files.push(filePath);
     }
