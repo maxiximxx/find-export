@@ -15,6 +15,15 @@ function hasExportModifier(node: ts.Node): boolean {
   );
 }
 
+function hasDefaultModifier(node: ts.Node): boolean {
+  const modifiers = ts.canHaveModifiers(node) ? ts.getModifiers(node) : undefined;
+  return (
+    modifiers?.some(
+      (m: ts.Modifier) => m.kind === ts.SyntaxKind.DefaultKeyword
+    ) ?? false
+  );
+}
+
 export function parseExports(filePath: string): ExportInfo[] {
   const content = fs.readFileSync(filePath, 'utf-8');
   const source = ts.createSourceFile(
@@ -72,23 +81,23 @@ export function parseExports(filePath: string): ExportInfo[] {
       }
     }
 
-    // export function B() {}
+    // export function B() {} or export default function B() {}
     if (ts.isFunctionDeclaration(node) && hasExportModifier(node)) {
       if (node.name) {
         exports.push({
           name: node.name.text,
-          kind: 'named',
+          kind: hasDefaultModifier(node) ? 'default' : 'named',
           line: getLine(source, node),
         });
       }
     }
 
-    // export class C {}
+    // export class C {} or export default class C {}
     if (ts.isClassDeclaration(node) && hasExportModifier(node)) {
       if (node.name) {
         exports.push({
           name: node.name.text,
-          kind: 'named',
+          kind: hasDefaultModifier(node) ? 'default' : 'named',
           line: getLine(source, node),
         });
       }
