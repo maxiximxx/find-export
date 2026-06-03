@@ -57,6 +57,27 @@ function extractAliasFromAST(
           }
         }
       }
+      if (name === 'alias' && ts.isArrayLiteralExpression(node.initializer)) {
+        for (const element of node.initializer.elements) {
+          if (ts.isObjectLiteralExpression(element)) {
+            let findVal: string | undefined;
+            let replacementVal: string | undefined;
+            for (const prop of element.properties) {
+              if (ts.isPropertyAssignment(prop)) {
+                const propName = prop.name.getText(source);
+                if (propName === 'find') {
+                  findVal = extractStringValue(prop.initializer, source);
+                } else if (propName === 'replacement') {
+                  replacementVal = extractStringValue(prop.initializer, source);
+                }
+              }
+            }
+            if (findVal && replacementVal) {
+              aliases[findVal] = replacementVal;
+            }
+          }
+        }
+      }
     }
     ts.forEachChild(node, visit);
   }

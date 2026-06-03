@@ -64,7 +64,7 @@ function findWebpackConfigPaths(projectRoot: string): string[] {
     try {
       const files = fs.readdirSync(dirPath);
       for (const f of files) {
-        if (/^webpack.*\.config.*\.[jt]s$/.test(f)) {
+        if (/^webpack(\.\w+)?\.config\.[jt]s$/.test(f)) {
           const full = path.join(dirPath, f);
           if (!results.includes(full)) {
             results.push(full);

@@ -21,12 +21,23 @@ export function resolveAlias(
   );
 
   for (const [alias, target] of sortedAliases) {
+    const hasStar = alias.endsWith('*');
     const aliasNoStar = alias.replace(/\*$/, '');
-    if (fromPath === aliasNoStar || fromPath.startsWith(aliasNoStar)) {
-      const rest = fromPath.slice(aliasNoStar.length);
-      const targetNoStar = target.replace(/\*$/, '');
-      const resolved = path.resolve(projectRoot, targetNoStar + rest);
-      return addExtensionIfNeeded(resolved);
+
+    if (hasStar) {
+      // Wildcard alias: must have something after the prefix
+      if (fromPath.startsWith(aliasNoStar) && fromPath.length > aliasNoStar.length) {
+        const rest = fromPath.slice(aliasNoStar.length);
+        const targetNoStar = target.replace(/\*$/, '');
+        const resolved = path.resolve(projectRoot, targetNoStar + rest);
+        return addExtensionIfNeeded(resolved);
+      }
+    } else {
+      // Exact alias: must match exactly
+      if (fromPath === aliasNoStar) {
+        const resolved = path.resolve(projectRoot, target);
+        return addExtensionIfNeeded(resolved);
+      }
     }
   }
 
