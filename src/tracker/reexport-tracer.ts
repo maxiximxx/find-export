@@ -1,4 +1,3 @@
-import * as path from 'path';
 import { ImportInfo, UsageResult, AliasConfig } from '../types';
 import { scanImports } from '../parser/import-scanner';
 
