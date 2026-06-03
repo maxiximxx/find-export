@@ -26,11 +26,20 @@
         }
       ]
     },
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "findExport",
+          "title": "Find Export",
+          "icon": "resources/find-export.svg"
+        }
+      ]
+    },
     "views": {
-      "explorer": [
+      "findExport": [
         {
           "id": "findExportResults",
-          "name": "Find Export"
+          "name": "Results"
         }
       ]
     },

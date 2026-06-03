@@ -6,8 +6,6 @@ import { searchUsages } from './tracker/usage-tracker';
 let sidebarProvider: FindExportProvider;
 
 export function activate(context: vscode.ExtensionContext) {
-  console.log('Find Export extension activated');
-
   // Register sidebar TreeView
   sidebarProvider = new FindExportProvider();
   const treeView = vscode.window.createTreeView('findExportResults', {
@@ -59,7 +57,7 @@ export function activate(context: vscode.ExtensionContext) {
           title: 'Finding exports...',
           cancellable: false,
         },
-        async (progress) => {
+        async (_progress) => {
           try {
             const result = await searchUsages(filePath, selectedText);
 
@@ -86,7 +84,7 @@ export function activate(context: vscode.ExtensionContext) {
 
             // Focus the sidebar view
             await vscode.commands.executeCommand(
-              'workbench.view.explorer'
+              'findExportResults.focus'
             );
           } catch (err: any) {
             vscode.window.showErrorMessage(
@@ -102,8 +100,8 @@ export function activate(context: vscode.ExtensionContext) {
   // Register open file command (for sidebar item clicks)
   const openFileCommand = vscode.commands.registerCommand(
     'findExport.openFile',
-    async (filePath: string, line: number) => {
-      await openFileAndHighlight(filePath, line);
+    async (filePath: string, line: number, importedNames?: string[]) => {
+      await openFileAndHighlight(filePath, line, importedNames);
     }
   );
   context.subscriptions.push(openFileCommand);

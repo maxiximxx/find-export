@@ -21,9 +21,9 @@ export function scanImports(
 
   for (const file of projectFiles) {
     // Skip ignored files
-    if (isIgnored(file, gitignorePatterns, projectRoot)) continue;
+    if (isIgnored(file, gitignorePatterns, projectRoot)) { continue; }
     // Skip target file itself
-    if (path.resolve(file) === resolvedTarget) continue;
+    if (path.resolve(file) === resolvedTarget) { continue; }
 
     let content: string;
     try {
@@ -44,19 +44,31 @@ export function scanImports(
         if (resolved !== resolvedTarget) return;
 
         const imports: string[] = [];
+        let defaultLocalName: string | undefined;
+        const renamedImports: Record<string, string> = {};
 
         if (node.importClause) {
           // import A from './helper' → default import
           if (node.importClause.name) {
-            imports.push(node.importClause.name.text);
+            imports.push('default');
+            defaultLocalName = node.importClause.name.text;
           }
-          // import { A, B } from './helper' → named imports
+          // import { A, B as C } from './helper' → named imports
           if (
             node.importClause.namedBindings &&
             ts.isNamedImports(node.importClause.namedBindings)
           ) {
             for (const element of node.importClause.namedBindings.elements) {
-              imports.push(element.name.text);
+              // element.propertyName = export name (before 'as')
+              // element.name = local name (after 'as', or same if no rename)
+              const exportName = element.propertyName
+                ? element.propertyName.text
+                : element.name.text;
+              const localName = element.name.text;
+              imports.push(exportName);
+              if (exportName !== localName) {
+                renamedImports[exportName] = localName;
+              }
             }
           }
         }
@@ -66,6 +78,8 @@ export function scanImports(
           imports,
           line: getLine(source, node),
           isReExport: false,
+          defaultLocalName,
+          renamedImports: Object.keys(renamedImports).length > 0 ? renamedImports : undefined,
         });
       }
 

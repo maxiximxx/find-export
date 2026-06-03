@@ -34,36 +34,45 @@ export function parseExports(filePath: string): ExportInfo[] {
   );
 
   const exports: ExportInfo[] = [];
+  const seen = new Set<string>();
 
   ts.forEachChild(source, (node) => {
     // export { A, B as default }
     if (ts.isExportDeclaration(node) && !node.moduleSpecifier) {
       if (node.exportClause && ts.isNamedExports(node.exportClause)) {
         for (const element of node.exportClause.elements) {
-          exports.push({
-            name: element.name.text,
-            kind: element.name.text === 'default' ? 'default' : 'named',
-            line: getLine(source, node),
-          });
+          const name = element.name.text;
+          if (!seen.has(name)) {
+            seen.add(name);
+            exports.push({
+              name,
+              kind: name === 'default' ? 'default' : 'named',
+              line: getLine(source, node),
+            });
+          }
         }
       }
     }
 
     // export default xxx
     if (ts.isExportAssignment(node) && !node.isExportEquals) {
+      let name: string | undefined;
+
       if (ts.isIdentifier(node.expression)) {
-        exports.push({
-          name: node.expression.text,
-          kind: 'default',
-          line: getLine(source, node),
-        });
-      } else {
-        // export default function() {} / export default 42 / export default {}
-        exports.push({
-          name: 'default',
-          kind: 'default',
-          line: getLine(source, node),
-        });
+        // export default Index
+        name = node.expression.text;
+      } else if (ts.isCallExpression(node.expression)) {
+        // export default forwardRef(Index) / memo(Component)
+        const args = node.expression.arguments;
+        if (args.length === 1 && ts.isIdentifier(args[0])) {
+          name = args[0].text;
+        }
+      }
+
+      if (!name) name = 'default';
+      if (!seen.has(name)) {
+        seen.add(name);
+        exports.push({ name, kind: 'default', line: getLine(source, node) });
       }
     }
 
@@ -71,11 +80,11 @@ export function parseExports(filePath: string): ExportInfo[] {
     if (ts.isVariableStatement(node) && hasExportModifier(node)) {
       for (const decl of node.declarationList.declarations) {
         if (ts.isIdentifier(decl.name)) {
-          exports.push({
-            name: decl.name.text,
-            kind: 'named',
-            line: getLine(source, node),
-          });
+          const name = decl.name.text;
+          if (!seen.has(name)) {
+            seen.add(name);
+            exports.push({ name, kind: 'named', line: getLine(source, node) });
+          }
         }
       }
     }
@@ -83,22 +92,30 @@ export function parseExports(filePath: string): ExportInfo[] {
     // export function B() {} or export default function B() {}
     if (ts.isFunctionDeclaration(node) && hasExportModifier(node)) {
       if (node.name) {
-        exports.push({
-          name: node.name.text,
-          kind: hasDefaultModifier(node) ? 'default' : 'named',
-          line: getLine(source, node),
-        });
+        const name = node.name.text;
+        if (!seen.has(name)) {
+          seen.add(name);
+          exports.push({
+            name,
+            kind: hasDefaultModifier(node) ? 'default' : 'named',
+            line: getLine(source, node),
+          });
+        }
       }
     }
 
     // export class C {} or export default class C {}
     if (ts.isClassDeclaration(node) && hasExportModifier(node)) {
       if (node.name) {
-        exports.push({
-          name: node.name.text,
-          kind: hasDefaultModifier(node) ? 'default' : 'named',
-          line: getLine(source, node),
-        });
+        const name = node.name.text;
+        if (!seen.has(name)) {
+          seen.add(name);
+          exports.push({
+            name,
+            kind: hasDefaultModifier(node) ? 'default' : 'named',
+            line: getLine(source, node),
+          });
+        }
       }
     }
 
@@ -107,12 +124,16 @@ export function parseExports(filePath: string): ExportInfo[] {
       const from = (node.moduleSpecifier as ts.StringLiteral).text;
       if (node.exportClause && ts.isNamedExports(node.exportClause)) {
         for (const element of node.exportClause.elements) {
-          exports.push({
-            name: element.name.text,
-            kind: element.name.text === 'default' ? 'default' : 'named',
-            line: getLine(source, node),
-            specifier: from,
-          });
+          const name = element.name.text;
+          if (!seen.has(name)) {
+            seen.add(name);
+            exports.push({
+              name,
+              kind: name === 'default' ? 'default' : 'named',
+              line: getLine(source, node),
+              specifier: from,
+            });
+          }
         }
       }
     }

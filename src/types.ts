@@ -11,6 +11,8 @@ export interface ImportInfo {
   line: number;           // import 语句行号
   isReExport: boolean;    // 是否是 re-export
   reExportFrom?: string;  // re-export 的来源路径
+  defaultLocalName?: string; // 默认导入的本地名 (import X from '...' 中的 X)
+  renamedImports?: Record<string, string>; // 重命名映射 { exportName: localName }
 }
 
 export interface UsageResult {
@@ -20,6 +22,7 @@ export interface UsageResult {
   context?: string;       // 该行代码内容 (用于预览)
   isReExport: boolean;    // 是否是 re-export 引用
   depth: number;          // re-export 链深度 (0 = 直接引用)
+  localName?: string;     // 默认导入的本地名 (用于高亮)
 }
 
 export interface AliasConfig {

@@ -5,7 +5,6 @@ import {
   ImportInfo,
   UsageResult,
   DynamicImportInfo,
-  AliasConfig,
 } from '../types';
 import { parseExports } from '../parser/export-parser';
 import { scanImports } from '../parser/import-scanner';
@@ -18,6 +17,7 @@ export interface SearchResult {
   targetFile: string;
   exports: ExportInfo[];
   usages: Map<string, UsageResult[]>;  // exportName → usage list
+  directImports: ImportInfo[];          // direct static imports
   fileReferences: ImportInfo[];         // static re-export file refs
   dynamicReferences: DynamicImportInfo[]; // dynamic import() refs
   filteredExportName?: string;          // if searching specific export
@@ -58,7 +58,6 @@ export async function searchUsages(
     gitignorePatterns,
     projectRoot
   );
-
   // 6. Separate re-export file references from direct imports
   const fileReferences: ImportInfo[] = [];
   const directImports: ImportInfo[] = [];
@@ -70,7 +69,6 @@ export async function searchUsages(
       directImports.push(imp);
     }
   }
-
   // 7. Trace re-export chains
   const reexportUsages = traceReExports(
     fileReferences,
@@ -83,16 +81,27 @@ export async function searchUsages(
   // 8. Merge direct imports and re-export results
   const usages = new Map<string, UsageResult[]>();
 
+  // Find the default export name (if any) for matching default imports
+  const defaultExport = exports.find((e) => e.kind === 'default');
+  const defaultExportName = defaultExport?.name;
+
   // Add direct usages
   for (const imp of directImports) {
     for (const name of imp.imports) {
-      if (!usages.has(name)) usages.set(name, []);
-      usages.get(name)!.push({
-        exportName: name,
+      // Default imports use 'default' as marker, match to actual default export name
+      const exportName = name === 'default' && defaultExportName ? defaultExportName : name;
+      // Get local name for highlighting
+      const localName = name === 'default'
+        ? imp.defaultLocalName
+        : imp.renamedImports?.[name];
+      if (!usages.has(exportName)) usages.set(exportName, []);
+      usages.get(exportName)!.push({
+        exportName,
         file: imp.file,
         line: imp.line,
         isReExport: false,
         depth: 0,
+        localName,
       });
     }
   }
@@ -111,7 +120,6 @@ export async function searchUsages(
     gitignorePatterns,
     projectRoot
   );
-
   // 10. Filter usages if specific export requested
   if (filteredExportName) {
     const filtered = new Map<string, UsageResult[]>();
@@ -123,6 +131,7 @@ export async function searchUsages(
       targetFile,
       exports,
       usages: filtered,
+      directImports,
       fileReferences,
       dynamicReferences,
       filteredExportName,
@@ -133,6 +142,7 @@ export async function searchUsages(
     targetFile,
     exports,
     usages,
+    directImports,
     fileReferences,
     dynamicReferences,
   };
