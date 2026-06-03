@@ -36,13 +36,13 @@ export function parseExports(filePath: string): ExportInfo[] {
   const exports: ExportInfo[] = [];
 
   ts.forEachChild(source, (node) => {
-    // export { A, B as C }
+    // export { A, B as default }
     if (ts.isExportDeclaration(node) && !node.moduleSpecifier) {
       if (node.exportClause && ts.isNamedExports(node.exportClause)) {
         for (const element of node.exportClause.elements) {
           exports.push({
             name: element.name.text,
-            kind: 'named',
+            kind: element.name.text === 'default' ? 'default' : 'named',
             line: getLine(source, node),
           });
         }
@@ -58,10 +58,9 @@ export function parseExports(filePath: string): ExportInfo[] {
           line: getLine(source, node),
         });
       } else {
-        // export default function() {} or export default class {}
-        const text = node.expression.getText(source);
+        // export default function() {} / export default 42 / export default {}
         exports.push({
-          name: text.split('(')[0].split('{')[0].trim() || 'default',
+          name: 'default',
           kind: 'default',
           line: getLine(source, node),
         });
@@ -103,15 +102,14 @@ export function parseExports(filePath: string): ExportInfo[] {
       }
     }
 
-    // export { A } from './other' (re-export)
-    // export { A as B } from './other'
+    // export { A as default } from './other'
     if (ts.isExportDeclaration(node) && node.moduleSpecifier) {
-      const from = node.moduleSpecifier.getText(source).replace(/['"]/g, '');
+      const from = (node.moduleSpecifier as ts.StringLiteral).text;
       if (node.exportClause && ts.isNamedExports(node.exportClause)) {
         for (const element of node.exportClause.elements) {
           exports.push({
             name: element.name.text,
-            kind: 'named',
+            kind: element.name.text === 'default' ? 'default' : 'named',
             line: getLine(source, node),
             specifier: from,
           });
