@@ -4,6 +4,8 @@ import { UsageResult, ImportInfo, DynamicImportInfo } from '../types';
 import { SearchResult } from '../tracker/usage-tracker';
 
 export class ExportTreeItem extends vscode.TreeItem {
+  exportName?: string;
+
   constructor(
     label: string,
     collapsibleState: vscode.TreeItemCollapsibleState
@@ -87,6 +89,7 @@ export class FindExportProvider implements vscode.TreeDataProvider<ExportTreeIte
           vscode.TreeItemCollapsibleState.Expanded
         );
         exportNode.contextValue = 'export';
+        exportNode.exportName = name;
         items.push(exportNode);
       }
 
@@ -131,7 +134,7 @@ export class FindExportProvider implements vscode.TreeDataProvider<ExportTreeIte
 
     // Children of export groups (usage locations)
     if (element.contextValue === 'export') {
-      const name = (element.label as string).replace(/📦 | \(\d+\)/g, '');
+      const name = element.exportName || '';
       const usages = this.results.get(name) || [];
       return usages.map((usage) => {
         const relPath = vscode.workspace.asRelativePath(usage.file);
