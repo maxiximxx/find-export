@@ -2,8 +2,8 @@
 
 ## 0.1.1
 
-- Fix: remove empty `activationEvents` array that prevented extension activation
-- Optimize: reduce VSIX package size from ~100KB to ~31KB by excluding dev files
+- Fix: bundle `typescript` and `minimatch` into VSIX so the extension activates correctly
+- Optimize: switch to esbuild bundling, reduce VSIX size from 3.78MB to 1.58MB
 - Translate README to English
 
 ## 0.1.0
