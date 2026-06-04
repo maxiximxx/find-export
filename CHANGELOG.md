@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.1.2
+
+- Feat: support `export interface`, `export type`, `export enum` in export detection
+- Feat: add icon to sidebar view panel
+- Feat: redesign extension icon with transparent background for better visibility across themes
+- Upgrade TypeScript to 6.x, update all dependencies to latest
+
 ## 0.1.1
 
 - Fix: bundle `typescript` and `minimatch` into VSIX so the extension activates correctly

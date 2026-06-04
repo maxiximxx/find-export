@@ -70,7 +70,7 @@ export class FindExportProvider implements vscode.TreeDataProvider<ExportTreeIte
 
       // Static references (always show, collapsed by default)
       const staticNode = new ExportTreeItem(
-        `🌐 静态引用 (${this.staticRefs.length})`,
+        `🌐 Static Import (${this.staticRefs.length})`,
         this.staticRefs.length > 0
           ? vscode.TreeItemCollapsibleState.Collapsed
           : vscode.TreeItemCollapsibleState.None
@@ -80,7 +80,7 @@ export class FindExportProvider implements vscode.TreeDataProvider<ExportTreeIte
 
       // Dynamic references (always show, collapsed by default)
       const dynNode = new ExportTreeItem(
-        `🔄 动态引用 (${this.dynamicRefs.length})`,
+        `🔄 Dynamic Import (${this.dynamicRefs.length})`,
         this.dynamicRefs.length > 0
           ? vscode.TreeItemCollapsibleState.Collapsed
           : vscode.TreeItemCollapsibleState.None

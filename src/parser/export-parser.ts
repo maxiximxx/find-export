@@ -119,6 +119,33 @@ export function parseExports(filePath: string): ExportInfo[] {
       }
     }
 
+    // export interface Foo {}
+    if (ts.isInterfaceDeclaration(node) && hasExportModifier(node)) {
+      const name = node.name.text;
+      if (!seen.has(name)) {
+        seen.add(name);
+        exports.push({ name, kind: 'named', line: getLine(source, node) });
+      }
+    }
+
+    // export type Bar = ...
+    if (ts.isTypeAliasDeclaration(node) && hasExportModifier(node)) {
+      const name = node.name.text;
+      if (!seen.has(name)) {
+        seen.add(name);
+        exports.push({ name, kind: 'named', line: getLine(source, node) });
+      }
+    }
+
+    // export enum Baz {}
+    if (ts.isEnumDeclaration(node) && hasExportModifier(node)) {
+      const name = node.name.text;
+      if (!seen.has(name)) {
+        seen.add(name);
+        exports.push({ name, kind: 'named', line: getLine(source, node) });
+      }
+    }
+
     // export { A as default } from './other'
     if (ts.isExportDeclaration(node) && node.moduleSpecifier) {
       const from = (node.moduleSpecifier as ts.StringLiteral).text;
