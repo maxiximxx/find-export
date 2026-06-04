@@ -6,4 +6,11 @@ tsconfig.json
 .git/**
 **/*.map
 **/*.ts
-!out/**
+**/*.d.ts
+!out/**/*.js
+.claude/**
+docs/**
+openspec/**
+CLAUDE.md
+*.vsix
+package-lock.json

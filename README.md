@@ -1,56 +1,56 @@
 # Find Export
 
-查找 TypeScript/JavaScript 文件中导出（export）在项目中的所有使用位置。
+Find where a file's exports are used across your TypeScript/JavaScript project.
 
-## 功能
+## Features
 
-- 📦 查看文件所有导出的使用情况
-- 🌐 静态引用（`import` / `export ... from`）
-- 🔄 动态引用（`import()`）
-- 🔗 支持重导出链追踪
-- 📍 点击跳转并高亮导入行和使用行
-- 🔤 支持默认导出、命名导出、重命名导入
-- 🛣️ 自动识别路径别名（tsconfig / vite / webpack）
+- 📦 View all usages of a file's exports
+- 🌐 Static references (`import` / `export ... from`)
+- 🔄 Dynamic references (`import()`)
+- 🔗 Re-export chain tracing
+- 📍 Click to jump and highlight import + usage lines
+- 🔤 Default exports, named exports, renamed imports
+- 🛣️ Automatic path alias resolution (tsconfig / vite / webpack)
 
-## 使用方式
+## Usage
 
-### 右键菜单
+### Context Menu
 
-1. 打开一个 `.ts` / `.tsx` / `.js` / `.jsx` 文件
-2. 在编辑器中右键 → **Find Export: Search**
-3. 左侧活动栏自动打开结果面板
+1. Open a `.ts` / `.tsx` / `.js` / `.jsx` file
+2. Right-click in the editor → **Find Export: Search**
+3. The results panel opens automatically in the sidebar
 
-### 命令面板
+### Command Palette
 
-1. `Ctrl+Shift+P`（Mac: `Cmd+Shift+P`）
-2. 输入 **Find Export: Search**
+1. `Ctrl+Shift+P` (Mac: `Cmd+Shift+P`)
+2. Type **Find Export: Search**
 
-### 搜索特定导出
+### Search a Specific Export
 
-选中导出名再执行搜索，只查询该导出的使用情况。
+Select an export name before running the search to query only that export's usages.
 
-## 结果面板
+## Results Panel
 
 ```
-📄 index.ts                    ← 目标文件
-  🌐 静态引用 (5)              ← import / export ... from（默认折叠）
-  🔄 动态引用 (1)              ← import()（默认折叠）
-  📦 getUrlParams (3)          ← 每个导出及其使用位置
+📄 index.ts                    ← Target file
+  🌐 Static References (5)     ← import / export ... from (collapsed by default)
+  🔄 Dynamic References (1)    ← import() (collapsed by default)
+  📦 getUrlParams (3)          ← Each export and its usages
     src/views/Home.tsx:10
     src/utils/request.ts:25
-  📦 isNumber (0)              ← 无使用记录
+  📦 isNumber (0)              ← No usages found
 ```
 
-## 路径别名
+## Path Aliases
 
-自动从以下配置读取路径别名（按优先级，后者覆盖前者）：
+Path aliases are automatically resolved from the following sources (in ascending priority, later overrides earlier):
 
-1. webpack.config 的 `resolve.alias`
-2. vite.config 的 `resolve.alias`
-3. tsconfig.json / jsconfig.json 的 `paths`（支持 project references）
-4. VS Code 设置 `findExport.aliases`
+1. webpack.config `resolve.alias`
+2. vite.config `resolve.alias`
+3. tsconfig.json / jsconfig.json `paths` (with project references support)
+4. VS Code setting `findExport.aliases`
 
-也可以在 VS Code 设置中手动配置：
+You can also configure aliases manually in VS Code settings:
 
 ```json
 {
@@ -61,7 +61,7 @@
 }
 ```
 
-## 支持的语言
+## Supported Languages
 
 - TypeScript (`.ts`)
 - TypeScript React (`.tsx`)

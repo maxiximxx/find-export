@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.1
+
+- Fix: remove empty `activationEvents` array that prevented extension activation
+- Optimize: reduce VSIX package size from ~100KB to ~31KB by excluding dev files
+- Translate README to English
+
 ## 0.1.0
 
 - Initial release
