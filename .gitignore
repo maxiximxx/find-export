@@ -1,4 +1,9 @@
 node_modules/
 out/
+dist/
 *.vsix
 openspec/
+.claude/
+.vscode/
+CLAUDE.md
+docs/
