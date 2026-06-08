@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.3
+
+- Docs: add Chinese README (README.zh-CN.md) with language switching
+- Docs: add code examples for default exports, named exports, and renamed imports
+
 ## 0.1.2
 
 - Feat: support `export interface`, `export type`, `export enum` in export detection

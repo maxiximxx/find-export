@@ -1,5 +1,7 @@
 # Find Export
 
+English | [中文](./README.zh-CN.md)
+
 Find where a file's exports are used across your TypeScript/JavaScript project.
 
 ## Features
@@ -7,9 +9,10 @@ Find where a file's exports are used across your TypeScript/JavaScript project.
 - 📦 View all usages of a file's exports
 - 🌐 Static references (`import` / `export ... from`)
 - 🔄 Dynamic references (`import()`)
+- 🔤 Default exports (`export default`), named exports (`export { name }`), renamed imports (`import { name as alias }`)
+- 🏷️ Type exports (`export interface`, `export type`, `export enum`)
 - 🔗 Re-export chain tracing
 - 📍 Click to jump and highlight import + usage lines
-- 🔤 Default exports, named exports, renamed imports
 - 🛣️ Automatic path alias resolution (tsconfig / vite / webpack)
 
 ## Usage

@@ -2,7 +2,7 @@
   "name": "find-export",
   "displayName": "Find Export",
   "description": "Find where a file's exports are used across your TypeScript/JavaScript project",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "publisher": "mxx",
   "license": "MIT",
   "icon": "resources/find-export.png",
